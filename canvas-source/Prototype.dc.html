@@ -24,14 +24,14 @@ a{color:#154447}a:hover{color:#023e3f}
 <x-import component-from-global-scope="Levotrade.TopBar" search="{{search}}" workspace="{{workspace}}" action="{{action}}" icon-actions="{{iconActions}}" user="{{user}}"></x-import>
 
 <sc-if value="{{isHome}}" hint-placeholder-val="{{yes}}">
-<main class="lt-home lt-container" style="flex-grow: 1">
+<main class="lt-home lt-container lt-container--full" style="flex-grow: 1">
 <x-import component-from-global-scope="Levotrade.WelcomeBanner" title="Mukhi Noordin &amp; Sons" subtitle="Trusted partnerships. Seamless trade." widgets="{{widgets}}"></x-import>
 <x-import component-from-global-scope="Levotrade.QuickAccess" sections="{{sections}}" on-open="{{onOpenModule}}"></x-import>
 </main>
 </sc-if>
 
 <sc-if value="{{isList}}" hint-placeholder-val="{{no}}">
-<main class="lt-page lt-container" style="flex-grow: 1; padding: 8px 16px 24px">
+<main class="lt-page lt-container lt-container--full" style="flex-grow: 1; padding: 8px 16px 24px">
 <x-import component-from-global-scope="Levotrade.PageHeader" breadcrumb="{{listBreadcrumb}}" title="Proforma Invoice" actions="{{listActions}}"></x-import>
 <x-import component-from-global-scope="Levotrade.StatGroup" items="{{stats}}"></x-import>
 <x-import component-from-global-scope="Levotrade.DataTableCard" columns="{{columns}}" rows="{{rows}}" filters="{{filters}}" page-size="{{pageSize}}" default-density="single" selectable="{{yes}}" render-expanded="{{renderInvoice}}" row-actions="{{rowActions}}" on-row-action="{{onRowAction}}" search-placeholder="Search" aria-label="Proforma invoices"></x-import>
@@ -40,7 +40,7 @@ a{color:#154447}a:hover{color:#023e3f}
 
 <sc-if value="{{isDetail}}" hint-placeholder-val="{{no}}">
 <main class="lt-container" style="flex-grow: 1; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 12px">
-<x-import component-from-global-scope="Levotrade.PageHeader" breadcrumb="{{detailBreadcrumb}}" title="PI Details" on-back="{{goList}}" back-href="#proforma-invoice" back-label="Back to Proforma Invoice" actions="{{detailActions}}"></x-import>
+<x-import component-from-global-scope="Levotrade.PageHeader" breadcrumb="{{detailBreadcrumb}}" title="PI Details" on-back="{{goBack}}" back-href="#back" back-label="{{backLabel}}" actions="{{detailActions}}"></x-import>
 <x-import component-from-global-scope="Levotrade.RecordSummary" title="{{d.ref}}" tags="{{d.tags}}" status="registered" meta="{{d.meta}}" map="{{d.map}}" stats="{{d.kpis}}"></x-import>
 <x-import component-from-global-scope="Levotrade.DetailSection" icon="assignment" title="PI Details">
 <x-import component-from-global-scope="Levotrade.DetailGrid" items="{{d.pi}}"></x-import>
@@ -82,7 +82,7 @@ a{color:#154447}a:hover{color:#023e3f}
 <sc-if value="{{isComplete}}" hint-placeholder-val="{{no}}">
 <main class="lt-form {{onlyCls}}" style="padding: 24px 16px 40px; box-sizing: border-box">
 <x-import component-from-global-scope="Levotrade.NoticeBar" tone="accent" dismissible="{{no}}" title="PI-MNS-000049-1026 is almost ready." actions="{{onlyToggle}}">Most details are filled in from the customer’s PO. Fill only the fields marked <x-import component-from-global-scope="Levotrade.ToFillBadge"></x-import> — <strong>{{leftText}}</strong>.</x-import>
-<x-import component-from-global-scope="Levotrade.FormHeader" title="Complete PI · PI-MNS-000049-1026" description="Ocean Crest Seafood · created from the customer’s PO. Fill the highlighted fields, then submit." on-back="{{goList}}" back-href="#proforma-invoice" back-label="Back to Proforma Invoice" actions="{{completeActions}}" sticky="{{yes}}"></x-import>
+<x-import component-from-global-scope="Levotrade.FormHeader" title="Complete PI · PI-MNS-000049-1026" description="Ocean Crest Seafood · created from the customer’s PO. Fill the highlighted fields, then submit." on-back="{{goBack}}" back-href="#back" back-label="{{backLabel}}" actions="{{completeActions}}" sticky="{{yes}}"></x-import>
 
 <x-import component-from-global-scope="Levotrade.FormSection" icon="assignment" title="PI Details" badge="Auto-filled">
 <x-import component-from-global-scope="Levotrade.FormGrid">
@@ -172,7 +172,7 @@ a{color:#154447}a:hover{color:#023e3f}
 
 <sc-if value="{{isAdd}}" hint-placeholder-val="{{no}}">
 <main class="lt-form" style="padding: 24px 16px 40px; box-sizing: border-box">
-<x-import component-from-global-scope="Levotrade.FormHeader" title="{{formTitle}}" description="{{formDesc}}" on-back="{{formBack}}" back-href="#back" back-label="{{formBackLabel}}" actions="{{formActions}}" sticky="{{yes}}"></x-import>
+<x-import component-from-global-scope="Levotrade.FormHeader" title="{{formTitle}}" description="{{formDesc}}" on-back="{{goBack}}" back-href="#back" back-label="{{backLabel}}" actions="{{formActions}}" sticky="{{yes}}"></x-import>
 
 <x-import component-from-global-scope="Levotrade.FormSection" id="pi-details" icon="assignment" title="PI Details" footer="{{firstFooter}}">
 <x-import component-from-global-scope="Levotrade.FormGrid">
@@ -308,9 +308,22 @@ class Component extends DCLogic {
     super(props);
     var self = this;
 
-    this.show = function (screen) {
+    // Screen history, so Back returns to the page the user actually came from.
+    this.history = [];
+    this.show = function (screen, opts) {
+      if (!(opts && opts.back) && self.state && self.state.name && self.state.name !== screen) {
+        // Going to a page that is already behind us (e.g. Save on Edit → PI Details) rewinds instead of piling up.
+        var at = self.history.lastIndexOf(screen);
+        if (at >= 0) self.history = self.history.slice(0, at);
+        else self.history.push(self.state.name);
+      }
       self.setState(self.stateFor(screen));
       try { window.scrollTo(0, 0); } catch (e) {}
+    };
+    this.goBack = function (e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var prev = self.history.pop() || self.fallbackBack();
+      self.show(prev, { back: true });
     };
     this.state = this.stateFor(props.startScreen || 'Home');
 
@@ -319,7 +332,7 @@ class Component extends DCLogic {
     this.goAdd = function () { self.show('Add PI'); };
     this.goDetail = function () { self.show('PI Detail'); };
     this.goEdit = function () { self.show('Edit PI'); };
-    this.formBack = function () { self.show(self.state.mode === 'edit' ? 'PI Detail' : 'Proforma Invoice'); };
+    this.formBack = function () { self.goBack(); };
     this.onSubmit = function () { self.show(self.state.mode === 'edit' ? 'PI Detail' : 'Proforma Invoice'); };
     this.onNav = function (id) {
       if (id === 'dashboard') self.show('Home');
@@ -435,7 +448,7 @@ class Component extends DCLogic {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.startScreen !== this.props.startScreen) this.show(this.props.startScreen || 'Home');
+    if (prevProps.startScreen !== this.props.startScreen) { this.history = []; this.show(this.props.startScreen || 'Home', { back: true }); }
   }
 
   fmt(n) { return (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -466,8 +479,19 @@ class Component extends DCLogic {
         sizes: p.sizes.map(function (s, i) { return { id: 's' + (i + 1), size: s[0], cartons: String(s[1]), price: s[2].toFixed(2) }; }) };
     });
   }
+  fallbackBack() {
+    var st = this.state || {};
+    if (st.screen === 'add' && st.mode === 'edit') return 'PI Detail';
+    if (st.screen === 'home') return 'Home';
+    return 'Proforma Invoice';
+  }
+  backLabelFor() {
+    var labels = { 'Home': 'Back to Home', 'Proforma Invoice': 'Back to Proforma Invoice', 'PI Detail': 'Back to PI details', 'Complete PI (pre-filled)': 'Back to Complete PI', 'Edit PI': 'Back to Edit PI' };
+    var prev = this.history[this.history.length - 1] || this.fallbackBack();
+    return labels[prev] || 'Back';
+  }
   stateFor(name) {
-    var base = { q: '', step: 1, v: this.emptyV(), products: [], modal: false, editingId: null, sizes: this.blankSizes(), files: [], mode: 'new',
+    var base = { name: name, q: '', step: 1, v: this.emptyV(), products: [], modal: false, editingId: null, sizes: this.blankSizes(), files: [], mode: 'new',
       c: this.blankComplete(), onlyToFill: false, noticeOpen: true, previewDoc: null, importOpen: false };
     var picked = { commodity: 'Fisheries', category: 'Frozen', customer: 'Bravo Corp', master: 'none', payTerm: 'LC at sight' };
     switch (name) {
@@ -854,6 +878,8 @@ class Component extends DCLogic {
       formTitle: isEdit ? 'Edit PI · PI-MNS-000046-1026' : 'Add PI',
       formDesc: isEdit ? 'Update the details below and save. Changes apply to this proforma invoice.' : 'Prepare a proforma invoice with shipment, product and payment details.',
       formBack: this.formBack,
+      goBack: this.goBack,
+      backLabel: this.backLabelFor(),
       formBackLabel: isEdit ? 'Back to PI details' : 'Back to Proforma Invoice',
       formActions: [
         h(L.Button, { key: 'cancel', label: 'Cancel', onClick: this.formBack }),
