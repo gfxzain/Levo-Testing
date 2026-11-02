@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Proforma Invoice</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/levotrade/tokens.css">
+<link rel="stylesheet" href="ds/levotrade/components/bundle.css">
+<script src="ds/levotrade/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#f4f6f2}
+</style>
+</helmet>
+<dc-import name="Prototype" start-screen="Proforma Invoice" hint-size="100%,1000px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

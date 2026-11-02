@@ -1,0 +1,87 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "AddPI.dc.html": {
+      "expand": "fill",
+      "h": 2379,
+      "is_interactive": true,
+      "title": "Orders & Finance · Add PI (products added)",
+      "w": 1440,
+      "x": 2646,
+      "y": -3
+    },
+    "CompletePI.dc.html": {
+      "expand": "fill",
+      "h": 2379,
+      "is_interactive": true,
+      "title": "Orders & Finance · Complete PI (pre-filled, fields to fill)",
+      "w": 1440,
+      "x": 5686,
+      "y": -3
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Home · Module Quick Access",
+      "w": 1440,
+      "x": -396,
+      "y": -3
+    },
+    "PIDetail.dc.html": {
+      "expand": "fill",
+      "h": 2306,
+      "is_interactive": true,
+      "title": "Orders & Finance · PI Details",
+      "w": 1440,
+      "x": 4166,
+      "y": -3
+    },
+    "ProformaInvoice.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Orders & Finance · Proforma Invoice",
+      "w": 1440,
+      "x": 1125,
+      "y": -3
+    },
+    "Prototype.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Full flow · Home → Proforma Invoice → PI Details → Add / Edit PI (export this)",
+      "w": 1468,
+      "x": 172,
+      "y": 3770
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-29T09:12:00Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/code/artifact/e007a48f-e403-4823-b4ae-56e547c8be93",
+      "copiedAt": "2026-11-02T11:46:00Z",
+      "namespace": "levotrade",
+      "title": "Levotrade",
+      "version": "1793619898-63ff"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {},
+  "order": [
+    "Main.dc.html",
+    "ProformaInvoice.dc.html",
+    "AddPI.dc.html",
+    "PIDetail.dc.html",
+    "CompletePI.dc.html",
+    "Prototype.dc.html"
+  ],
+  "pages": [],
+  "title": "Levotrade Home"
+}
