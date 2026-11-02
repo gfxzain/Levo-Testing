@@ -1,0 +1,10 @@
+{
+  "name": "levotrade-ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Levotrade Proforma Invoice screens as standalone HTML",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npx --yes serve ."
+  }
+}
